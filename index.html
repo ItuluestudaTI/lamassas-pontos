@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La' Massas — Clube de Pontos</title>
+<style>
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  :root{
+    --amarelo:#FFC93C;
+    --laranja:#FF7A00;
+    --vermelho:#E63946;
+    --marrom:#4A2C17;
+    --creme:#FFF7EC;
+    --branco:#fff;
+    --sombra:0 10px 30px rgba(74,44,23,.10);
+  }
+
+  body{
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background:var(--creme);
+    color:var(--marrom);
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    background:linear-gradient(135deg, #FF7A00 0%, #E63946 100%);
+    color:#fff;
+    text-align:center;
+    padding:40px 20px 90px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"🥟🥤";
+    position:absolute;
+    font-size:9rem;
+    opacity:.10;
+    right:-10px;
+    bottom:-30px;
+    transform:rotate(-15deg);
+  }
+  header h1{
+    font-size:clamp(1.6rem, 5vw, 2.6rem);
+    letter-spacing:.5px;
+    text-shadow:0 3px 10px rgba(0,0,0,.18);
+  }
+  header p{
+    margin-top:10px;
+    font-size:clamp(.9rem, 2.5vw, 1.05rem);
+    opacity:.95;
+  }
+  .selo{
+    display:inline-block;
+    margin-top:16px;
+    background:rgba(255,255,255,.2);
+    border:2px dashed rgba(255,255,255,.55);
+    padding:8px 18px;
+    border-radius:50px;
+    font-weight:700;
+    font-size:.9rem;
+    backdrop-filter:blur(4px);
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .container{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 18px;
+  }
+
+  .card{
+    background:var(--branco);
+    border-radius:20px;
+    box-shadow:var(--sombra);
+    padding:28px;
+  }
+
+  /* Formulário sobrepõe o header */
+  .form-card{
+    margin-top:-60px;
+    position:relative;
+    z-index:2;
+  }
+
+  .card h2{
+    font-size:1.25rem;
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card .sub{
+    font-size:.88rem;
+    color:#96795f;
+    margin-bottom:22px;
+  }
+
+  /* ---------- FORMULÁRIO ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .campo{ display:flex; flex-direction:column; gap:6px; }
+  .campo.full{ grid-column:1 / -1; }
+  .campo label{
+    font-size:.82rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    color:#8a6b50;
+  }
+  .campo input{
+    width:100%;
+    padding:13px 15px;
+    border:2px solid #F1E2CE;
+    border-radius:12px;
+    font-size:15px;
+    font-family:inherit;
+    color:var(--marrom);
+    background:#FFFDFA;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .campo input::placeholder{ color:#c4b09c; }
+  .campo input:focus{
+    outline:none;
+    border-color:var(--laranja);
+    box-shadow:0 0 0 4px rgba(255,122,0,.13);
+    background:#fff;
+  }
+  .campo .dica{ font-size:.75rem; color:#a89078; }
+
+  .btn{
+    border:none;
+    border-radius:12px;
+    padding:14px 22px;
+    font-size:15px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    transition:transform .15s, box-shadow .15s, opacity .2s;
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{
+    width:100%;
+    margin-top:22px;
+    background:linear-gradient(135deg, var(--laranja), var(--vermelho));
+    color:#fff;
+    font-size:16px;
+    box-shadow:0 8px 20px rgba(230,57,70,.30);
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 26px rgba(230,57,70,.38); }
+
+  /* ---------- ESTATÍSTICAS ---------- */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:16px;
+    margin-top:24px;
+  }
+  .stat{
+    background:var(--branco);
+    border-radius:16px;
+    padding:20px;
+    text-align:center;
+    box-shadow:var(--sombra);
+    border-bottom:4px solid var(--amarelo);
+  }
+  .stat .num{
+    font-size:2.1rem;
+    font-weight:800;
+    color:var(--laranja);
+    line-height:1;
+  }
+  .stat .rot{
+    font-size:.78rem;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:#96795f;
+    margin-top:8px;
+    font-weight:700;
+  }
+
+  /* ---------- REGRAS ---------- */
+  .regras{
+    margin-top:26px;
+    background:linear-gradient(135deg, #FFF3D6, #FFE7CC);
+    border:2px dashed var(--amarelo);
+    border-radius:18px;
+    padding:24px;
+  }
+  .regras h3{ font-size:1.05rem; margin-bottom:14px; }
+  .regras ul{ list-style:none; display:grid; gap:10px; }
+  .regras li{
+    display:flex;
+    gap:10px;
+    font-size:.92rem;
+    align-items:flex-start;
+    line-height:1.45;
+  }
+  .regras li span{ font-size:1.05rem; }
+  .regras .destaque{
+    margin-top:16px;
+    background:var(--branco);
+    border-radius:12px;
+    padding:14px 16px;
+    font-size:.9rem;
+    font-weight:700;
+    text-align:center;
+    color:var(--vermelho);
+  }
+
+  /* ---------- LISTA DE CLIENTES ---------- */
+  .secao-titulo{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin:36px 0 18px;
+    flex-wrap:wrap;
+  }
+  .secao-titulo h2{ font-size:1.25rem; }
+  .btn-limpar{
+    background:#fff;
+    color:var(--vermelho);
+    border:2px solid #FFD9DC;
+    padding:9px 16px;
+    font-size:.82rem;
+    border-radius:10px;
+  }
+  .btn-limpar:hover{ background:#FFF0F1; }
+
+  .lista{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(310px, 1fr));
+    gap:18px;
+  }
+
+  .cliente{
+    background:var(--branco);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:var(--sombra);
+    border-left:6px solid var(--amarelo);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    animation:entra .3s ease;
+  }
+  @keyframes entra{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .cliente-top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .avatar{
+    width:46px; height:46px;
+    flex:0 0 46px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--laranja), var(--vermelho));
+    color:#fff;
+    display:grid;
+    place-items:center;
+    font-weight:800;
+    font-size:1.2rem;
+  }
+  .cliente-top h3{
+    font-size:1rem;
+    line-height:1.2;
+    word-break:break-word;
+  }
+  .cliente-top .tel{
+    font-size:.8rem;
+    color:#96795f;
+  }
+  .pts{
+    margin-left:auto;
+    text-align:center;
+    background:#FFF3D6;
+    border-radius:12px;
+    padding:6px 12px;
+    min-width:64px;
+  }
+  .pts strong{
+    display:block;
+    font-size:1.25rem;
+    color:var(--laranja);
+    line-height:1;
+  }
+  .pts span{
+    font-size:.62rem;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:#96795f;
+    font-weight:700;
+  }
+
+  .cliente p.info{
+    font-size:.85rem;
+    color:#6b5544;
+    line-height:1.4;
+    word-break:break-word;
+  }
+  .cliente p.ind{
+    font-size:.82rem;
+    color:#1a7f5a;
+    background:#E9FBF3;
+    padding:7px 10px;
+    border-radius:9px;
+  }
+
+  .barra{
+    height:8px;
+    background:#F1E2CE;
+    border-radius:50px;
+    overflow:hidden;
+  }
+  .barra > div{
+    height:100%;
+    background:linear-gradient(90deg, var(--amarelo), var(--laranja));
+    border-radius:50px;
+    transition:width .5s ease;
+  }
+
+  .acoes{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .btn-mini{
+    padding:9px 12px;
+    font-size:.78rem;
+    border-radius:9px;
+    flex:1;
+    white-space:nowrap;
+  }
+  .btn-pedido{ background:#E9FBF3; color:#127a53; }
+  .btn-pedido:hover{ background:#D3F5E7; }
+  .btn-resgate{ background:linear-gradient(135deg, var(--laranja), var(--vermelho)); color:#fff; }
+  .btn-resgate:disabled{
+    background:#EFE6DA;
+    color:#b5a291;
+    cursor:not-allowed;
+    transform:none;
+  }
+  .btn-excluir{
+    flex:0 0 42px;
+    background:#FFF0F1;
+    color:var(--vermelho);
+  }
+  .btn-excluir:hover{ background:#FFDFE2; }
+
+  .data{
+    font-size:.7rem;
+    color:#b09a86;
+    text-align:right;
+  }
+
+  .vazio{
+    grid-column:1 / -1;
+    text-align:center;
+    padding:50px 20px;
+    background:var(--branco);
+    border-radius:18px;
+    box-shadow:var(--sombra);
+    color:#a89078;
+  }
+  .vazio span{ font-size:2.6rem; display:block; margin-bottom:10px; }
+
+  /* ---------- TOAST ---------- */
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:26px;
+    transform:translate(-50%, 120px);
+    background:var(--marrom);
+    color:#fff;
+    padding:14px 24px;
+    border-radius:50px;
+    font-size:.9rem;
+    font-weight:600;
+    box-shadow:0 12px 30px rgba(0,0,0,.25);
+    opacity:0;
+    pointer-events:none;
+    transition:.35s cubic-bezier(.2,.9,.3,1.3);
+    z-index:99;
+    max-width:90vw;
+    text-align:center;
+  }
+  .toast.show{ transform:translate(-50%, 0); opacity:1; }
+  .toast.ok{ background:#127a53; }
+  .toast.erro{ background:var(--vermelho); }
+  .toast.bonus{ background:linear-gradient(135deg, var(--laranja), var(--vermelho)); }
+
+  footer{
+    text-align:center;
+    margin-top:50px;
+    font-size:.82rem;
+    color:#a89078;
+    line-height:1.7;
+  }
+
+  /* ---------- RESPONSIVO ---------- */
+  @media (max-width:640px){
+    .grid{ grid-template-columns:1fr; }
+    .stats{ grid-template-columns:1fr; }
+    .card{ padding:22px 18px; }
+    .stat .num{ font-size:1.8rem; }
+    .btn-mini{ font-size:.74rem; padding:9px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🥟 La' Massas 🥤</h1>
+  <p>Seu pedido vale pontos e seus pontos valem delícias!</p>
+  <div class="selo">🎁 Clube de Pontos — Cadastre-se e ganhe 5 pontos</div>
+</header>
+
+<div class="container">
+
+  <!-- FORMULÁRIO -->
+  <section class="card form-card">
+    <h2>📝 Cadastro do Cliente</h2>
+    <p class="sub">Preencha os dados abaixo. Ao se cadastrar você já ganha <strong>5 pontos de boas-vindas</strong>!</p>
+
+    <form id="formCadastro" novalidate>
+      <div class="grid">
+        <div class="campo full">
+          <label for="nome">Nome completo *</label>
+          <input type="text" id="nome" placeholder="Ex: Maria Silva" autocomplete="name" required>
+        </div>
+
+        <div class="campo full">
+          <label for="endereco">Endereço de entrega *</label>
+          <input type="text" id="endereco" placeholder="Rua, número, bairro e complemento" autocomplete="street-address" required>
+        </div>
+
+        <div class="campo">
+          <label for="telefone">Telefone / WhatsApp *</label>
+          <input type="tel" id="telefone" data-tel placeholder="(11) 91234-5678" inputmode="numeric" required>
+          <span class="dica">Usado para identificar você no clube de pontos.</span>
+        </div>
+
+        <div class="campo">
+          <label for="indicacao">Indicação de um amigo</label>
+          <input type="tel" id="indicacao" data-tel placeholder="(11) 91234-5678" inputmode="numeric">
+          <span class="dica">Telefone do amigo que te indicou — ele ganha +2 pontos.</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">🎉 Cadastrar e ganhar 5 pontos</button>
+    </form>
+  </section>
+
+  <!-- ESTATÍSTICAS -->
+  <section class="stats">
+    <div class="stat">
+      <div class="num" id="totalClientes">0</div>
+      <div class="rot">Clientes cadastrados</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="totalPontos">0</div>
+      <div class="rot">Pontos ativos</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="totalCombos">0</div>
+      <div class="rot">Combos resgatados</div>
+    </div>
+  </section>
+
+  <!-- REGRAS -->
+  <section class="regras">
+    <h3>⭐ Como funciona o Clube de Pontos</h3>
+    <ul>
+      <li><span>🎉</span> <div><strong>5 pontos</strong> de boas-vindas ao se cadastrar na La' Massas!</div></li>
+      <li><span>🛵</span> <div><strong>5 pontos</strong> a cada pedido acima de R$ 20,00.</div></li>
+      <li><span>🤝</span> <div><strong>2 pontos</strong> por amigo indicado!</div></li>
+    </ul>
+    <div class="destaque">
+      🏆 Junte 20 pontos e troque pelo nosso combo especial: salgado + refrigerante! 🤤❤️
+    </div>
+  </section>
+
+  <!-- LISTA -->
+  <div class="secao-titulo">
+    <h2>👥 Clientes cadastrados</h2>
+    <button class="btn btn-limpar" id="btnLimpar">🗑️ Limpar todos os dados</button>
+  </div>
+
+  <section class="lista" id="lista"></section>
+
+  <footer>
+    <strong>La' Massas</strong> — muito sabor e vantagens para você! 🥟💛<br>
+    #LaMassas #ClubeDePontos #Promoção #SalgadosGourmets #Delivery #VantagensExclusivas
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   La' Massas — Clube de Pontos
+   Dados salvos no localStorage do navegador
+   ========================================================= */
+
+const STORAGE_KEY = 'lamassas_clientes_v1';
+const PONTOS_BOAS_VINDAS = 5;
+const PONTOS_POR_PEDIDO   = 5;
+const PONTOS_POR_INDICACAO = 2;
+const PONTOS_PARA_COMBO   = 20;
+
+let clientes = carregar();
+
+/* ---------- Persistência ---------- */
+function carregar(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const dados = raw ? JSON.parse(raw) : [];
+    return Array.isArray(dados) ? dados : [];
+  }catch(e){
+    console.warn('Erro ao carregar dados:', e);
+    return [];
+  }
+}
+function salvar(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(clientes));
+  }catch(e){
+    toast('Não foi possível salvar os dados.', 'erro');
+  }
+}
+
+/* ---------- Helpers ---------- */
+function somenteDigitos(v){ return String(v || '').replace(/\D/g, ''); }
+
+function mascaraTelefone(valor){
+  const d = somenteDigitos(valor).slice(0, 11);
+  if(d.length === 0) return '';
+  if(d.length <= 2)  return `(${d}`;
+  if(d.length <= 6)  return `(${d.slice(0,2)}) ${d.slice(2)}`;
+  if(d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+}
+
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g, c => (
+    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+  ));
+}
+
+function hoje(){
+  return new Date().toLocaleDateString('pt-BR');
+}
+
+let toastTimer;
+function toast(msg, tipo = 'ok'){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + tipo;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, 3600);
+}
+
+/* ---------- Máscara automática nos telefones ---------- */
+document.querySelectorAll('[data-tel]').forEach(inp => {
+  inp.addEventListener('input', e => {
+    e.target.value = mascaraTelefone(e.target.value);
+  });
+});
+
+/* ---------- Cadastro ---------- */
+const form = document.getElementById('formCadastro');
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const nome      = document.getElementById('nome').value.trim();
+  const endereco  = document.getElementById('endereco').value.trim();
+  const telRaw    = document.getElementById('telefone').value.trim();
+  const indicRaw  = document.getElementById('indicacao').value.trim();
+
+  /* Validações */
+  if(nome.length < 3){
+    toast('Digite o nome completo do cliente.', 'erro');
+    return;
+  }
+  if(endereco.length < 5){
+    toast('Digite um endereço válido.', 'erro');
+    return;
+  }
+  const telDigitos = somenteDigitos(telRaw);
+  if(telDigitos.length < 10){
+    toast('Telefone inválido. Use (DDD) + número.', 'erro');
+    return;
+  }
+  if(clientes.some(c => somenteDigitos(c.telefone) === telDigitos)){
+    toast('Este telefone já está cadastrado!', 'erro');
+    return;
+  }
+
+  /* Verifica indicação */
+  const indDigitos = somenteDigitos(indicRaw);
+  let indicadoPorNome = null;
+  let amigoIndex = -1;
+
+  if(indDigitos.length >= 10){
+    if(indDigitos === telDigitos){
+      toast('Você não pode indicar o seu próprio número. 😅', 'erro');
+      return;
+    }
+    amigoIndex = clientes.findIndex(c => somenteDigitos(c.telefone) === indDigitos);
+    if(amigoIndex >= 0){
+      indicadoPorNome = clientes[amigoIndex].nome;
+      clientes[amigoIndex].pontos += PONTOS_POR_INDICACAO;
+      clientes[amigoIndex].indicacoes = (clientes[amigoIndex].indicacoes || 0) + 1;
+    }
+  }
+
+  /* Cria o novo cliente */
+  const novo = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+    nome,
+    endereco,
+    telefone: mascaraTelefone(telDigitos),
+    indicacao: indDigitos.length >= 10 ? mascaraTelefone(indDigitos) : '',
+    indicadoPorNome,
+    pontos: PONTOS_BOAS_VINDAS,
+    pedidos: 0,
+    resgates: 0,
+    data: hoje()
+  };
+
+  clientes.push(novo);
+  salvar();
+  render();
+
+  form.reset();
+
+  if(indicadoPorNome){
+    toast(`✅ ${nome} cadastrado! +${PONTOS_BOAS_VINDAS} pts e ${indicadoPorNome} ganhou +${PONTOS_POR_INDICACAO} pts 🤝`, 'bonus');
+  }else{
+    toast(`✅ ${nome} cadastrado com ${PONTOS_BOAS_VINDAS} pontos de boas-vindas! 🎉`, 'ok');
+  }
+});
+
+/* ---------- Ações nos cards (delegação de eventos) ---------- */
+document.getElementById('lista').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-acao]');
+  if(!btn) return;
+
+  const id = btn.dataset.id;
+  const idx = clientes.findIndex(c => c.id === id);
+  if(idx < 0) return;
+
+  const cliente = clientes[idx];
+  const acao = btn.dataset.acao;
+
+  if(acao === 'pedido'){
+    cliente.pontos += PONTOS_POR_PEDIDO;
+    cliente.pedidos += 1;
+    salvar();
+    render();
+    toast(`🛵 Pedido registrado! ${cliente.nome} ganhou +${PONTOS_POR_PEDIDO} pontos.`, 'ok');
+  }
+
+  if(acao === 'resgatar'){
+    if(cliente.pontos < PONTOS_PARA_COMBO){
+      toast('Pontos insuficientes para o combo. Faltam ' + (PONTOS_PARA_COMBO - cliente.pontos) + ' pontos.', 'erro');
+      return;
+    }
+    cliente.pontos -= PONTOS_PARA_COMBO;
+    cliente.resgates += 1;
+    salvar();
+    render();
+    toast(`🏆 Combo liberado para ${cliente.nome}! Salgado + refrigerante 🥟🥤`, 'bonus');
+  }
+
+  if(acao === 'excluir'){
+    if(confirm(`Excluir o cadastro de "${cliente.nome}"?`)){
+      clientes.splice(idx, 1);
+      salvar();
+      render();
+      toast('Cadastro removido.', 'erro');
+    }
+  }
+});
+
+/* ---------- Limpar tudo ---------- */
+document.getElementById('btnLimpar').addEventListener('click', () => {
+  if(clientes.length === 0){
+    toast('Não há dados para limpar.', 'erro');
+    return;
+  }
+  if(confirm('Isso apagará TODOS os clientes e pontos. Deseja continuar?')){
+    clientes = [];
+    salvar();
+    render();
+    toast('Todos os dados foram apagados.', 'erro');
+  }
+});
+
+/* ---------- Renderização ---------- */
+function render(){
+  const lista = document.getElementById('lista');
+
+  /* Estatísticas */
+  document.getElementById('totalClientes').textContent = clientes.length;
+  document.getElementById('totalPontos').textContent =
+    clientes.reduce((s, c) => s + (c.pontos || 0), 0);
+  document.getElementById('totalCombos').textContent =
+    clientes.reduce((s, c) => s + (c.resgates || 0), 0);
+
+  /* Estado vazio */
+  if(clientes.length === 0){
+    lista.innerHTML = `
+      <div class="vazio">
+        <span>🥟</span>
+        Nenhum cliente cadastrado ainda.<br>
+        Preencha o formulário acima e comece a acumular pontos!
+      </div>`;
+    return;
+  }
+
+  /* Cards (mais recentes primeiro) */
+  lista.innerHTML = clientes.slice().reverse().map(c => {
+    const progresso = Math.min(c.pontos, PONTOS_PARA_COMBO) / PONTOS_PARA_COMBO * 100;
+    const podeResgatar = c.pontos >= PONTOS_PARA_COMBO;
+    const inicial = (c.nome || '?').trim().charAt(0).toUpperCase();
+
+    let linhaIndicacao = '';
+    if(c.indicadoPorNome){
+      linhaIndicacao = `<p class="info ind">🤝 Indicado por <strong>${esc(c.indicadoPorNome)}</strong></p>`;
+    }else if(c.indicacao){
+      linhaIndicacao = `<p class="info ind">🤝 Indicação informada: ${esc(c.indicacao)}</p>`;
+    }
+
+    return `
+      <article class="cliente">
+        <div class="cliente-top">
+          <div class="avatar">${esc(inicial)}</div>
+          <div>
+            <h3>${esc(c.nome)}</h3>
+            <span class="tel">📞 ${esc(c.telefone)}</span>
+          </div>
+          <div class="pts">
+            <strong>${c.pontos}</strong>
+            <span>pontos</span>
+          </div>
+        </div>
+
+        <p class="info">📍 ${esc(c.endereco)}</p>
+        ${linhaIndicacao}
+
+        <div class="barra"><div style="width:${progresso}%"></div></div>
+
+        <div class="acoes">
+          <button class="btn btn-mini btn-pedido" data-acao="pedido" data-id="${c.id}">
+            🛵 + Pedido R$20
+          </button>
+          <button class="btn btn-mini btn-resgate" data-acao="resgatar" data-id="${c.id}" ${podeResgatar ? '' : 'disabled'}>
+            🎁 Resgatar combo
+          </button>
+          <button class="btn btn-mini btn-excluir" data-acao="excluir" data-id="${c.id}" title="Excluir cliente">
+            🗑️
+          </button>
+        </div>
+
+        <p class="data">Cadastrado em ${esc(c.data)} • ${c.pedidos} pedido(s) • ${c.resgates} combo(s)</p>
+      </article>`;
+  }).join('');
+}
+
+/* ---------- Inicialização ---------- */
+render();
+</script>
+</body>
+</html>
